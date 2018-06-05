@@ -1,3 +1,21 @@
+/*
+ * Copyright 2018 Evan Cleary
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 package me.cleary.evan.roboapp.network;
 
@@ -23,9 +41,53 @@ public class TCPServer implements Server {
     private Socket mSocket;
     private boolean mActive = false;
     private WriteServer mWr;
-    private Thread mReadThread, mWriteThread;
+    private EventServer mEs;
+    private Thread mReadThread, mWriteThread, mEventThread;
+    private PacketReceivedListener mListener;
 
+    public void init() {
+        mEs  = new EventServer();
+        mEventThread = new Thread(mEs);
+        mEventThread.setDaemon(true);
+        mEventThread.start();
+    }
 
+    public void shutdown(){
+        this.disconnect();
+        try {
+            mEventThread.join();
+        } catch (InterruptedException e) {
+            // Swallow
+        }
+        mListener = null;
+    }
+
+    public interface PacketReceivedListener {
+        void onPacketReceived(Packet p);
+    }
+
+    public void registerListener(PacketReceivedListener listener) {
+        mListener = listener;
+    }
+
+    private class EventServer implements Runnable {
+
+        private LinkedBlockingQueue<Packet> eventQueue = new LinkedBlockingQueue<>();
+
+        @Override
+        public void run() {
+            while(mActive) {
+                Packet p = null;
+                try {
+                    p = eventQueue.take();
+                    if(mListener != null) {
+                        mListener.onPacketReceived(p);
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    }
 
     private class ReadThread implements Runnable {
 
@@ -64,6 +126,9 @@ public class TCPServer implements Server {
                         }
                         if (succ) {
                             mWr.addPacket(new AckPacket(p.getId()));
+                            if (mListener != null) {
+                                mListener.onPacketReceived(p);
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -123,6 +188,7 @@ public class TCPServer implements Server {
                 mSocket = new Socket();
                 SocketAddress socketAddress = new InetSocketAddress(server, port);
                 mSocket.connect(socketAddress);
+                mActive = true;
                 mReadThread = new Thread(new ReadThread(mSocket));
                 mWr = new WriteServer(mSocket);
                 mWriteThread = new Thread(mWr);
@@ -148,5 +214,9 @@ public class TCPServer implements Server {
                 } catch (IOException e){
                 }
             }
+        }
+
+        public void sendPacket(Packet p) {
+            mWr.addPacket(p);
         }
     }
