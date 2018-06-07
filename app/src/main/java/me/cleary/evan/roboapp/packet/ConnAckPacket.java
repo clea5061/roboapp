@@ -19,5 +19,40 @@
 
 package me.cleary.evan.roboapp.packet;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public class ConnAckPacket extends AbstractPacket {
+    public static final byte[] OPCODE = {5, 'C', 'A', 24};
+
+    static {
+        PacketFactory.registerPacket(OPCODE, ConnAckPacket.class);
+    }
+    private String mName;
+
+    public String getName(){
+        return mName;
+    }
+
+    @Override
+    public void writePacket(OutputStream os) throws IOException {
+        os.write(OPCODE);
+        this.mPacketLength = mName.getBytes().length;
+        super.writePacket(os);
+        os.write(mName.getBytes("ASCII"));
+    }
+
+    @Override
+    public boolean readPacket(InputStream is) {
+        super.readPacket(is);
+        byte[] bytesIn = new byte[mPacketLength];
+        try {
+            is.read(bytesIn);
+            mName = new String(bytesIn, 0, bytesIn.length, "ASCII");
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -19,6 +19,8 @@
 
 package me.cleary.evan.roboapp.packet;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,13 +30,21 @@ import java.util.Map;
 
 public class PacketFactory {
 
-    private static Map<byte[], Class<? extends Packet>> packetMap = new HashMap<>();
+    private static Map<String, Class<? extends Packet>> packetMap = new HashMap<>();
+
+    static {
+        packetMap.put(new String(ConnAckPacket.OPCODE),ConnAckPacket.class);
+        packetMap.put(new String(AckPacket.OPCODE),AckPacket.class);
+        packetMap.put(new String(StatePacket.OPCODE),StatePacket.class);
+    }
 
     public static void registerPacket(byte[] opcode, Class<? extends Packet> packetClass) {
-        packetMap.put(opcode, packetClass);
+        packetMap.put(new String(opcode), packetClass);
     }
 
     public static Packet getPacket(byte[] opcode) throws IllegalAccessException, InstantiationException {
-        return packetMap.get(opcode).newInstance();
+        Log.d("ROBO","Decoding "+new String(opcode));
+        Class<? extends Packet> c = packetMap.get(new String(opcode));
+        return c.newInstance();
     }
 }

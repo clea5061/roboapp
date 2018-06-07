@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
  */
 
 public class AckPacket extends AbstractPacket{
-    private static final byte[] OPCODE = {5, 'A', 'C', 24};
+    public static final byte[] OPCODE = {5, 'A', 'C', 24};
 
     static {
         PacketFactory.registerPacket(OPCODE, AckPacket.class);

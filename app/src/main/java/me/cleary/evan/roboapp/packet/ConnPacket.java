@@ -24,8 +24,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class ConnPacket extends AbstractPacket {
+    private static final byte[] OPCODE = {5, 'C', 'N', 24};
+
+    static {
+        PacketFactory.registerPacket(OPCODE, ConnPacket.class);
+    }
 
     private String mName;
+
 
     public ConnPacket(String name) {
         mName = name;
@@ -33,6 +39,7 @@ public class ConnPacket extends AbstractPacket {
 
     @Override
     public void writePacket(OutputStream os) throws IOException {
+        os.write(OPCODE);
         this.mPacketLength = mName.getBytes().length;
         super.writePacket(os);
         os.write(mName.getBytes("ASCII"));
