@@ -44,6 +44,7 @@ public class TCPServer implements Server {
     private EventServer mEs;
     private Thread mReadThread, mWriteThread, mEventThread;
     private PacketReceivedListener mListener;
+    private ServerListener mServerListener;
 
     public void init() {
         mEs  = new EventServer();
@@ -66,8 +67,14 @@ public class TCPServer implements Server {
         void onPacketReceived(Packet p);
     }
 
-    public void registerListener(PacketReceivedListener listener) {
+    public interface ServerListener {
+        void connected();
+        void disconnected();
+    }
+
+    public void registerListener(PacketReceivedListener listener, ServerListener serverListener) {
         mListener = listener;
+        mServerListener = serverListener;
     }
 
     private class EventServer implements Runnable {
@@ -196,6 +203,9 @@ public class TCPServer implements Server {
                 mWriteThread.setDaemon(true);
                 mReadThread.start();
                 mWriteThread.start();
+                if(mServerListener !=null) {
+                    mServerListener.connected();
+                }
             } catch (IOException e) {
             }
         }
@@ -213,6 +223,9 @@ public class TCPServer implements Server {
                     mSocket.close();
                 } catch (IOException e){
                 }
+            }
+            if(mServerListener != null) {
+                mServerListener.disconnected();
             }
         }
 

@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -83,9 +84,18 @@ public class LoginActivity extends AppCompatActivity implements TCPServer.Packet
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            RoboServer.ListenerBinder binder = (RoboServer.ListenerBinder) iBinder;
-            binder.registerListener(LoginActivity.this);
-            binder.sendPacket(new ConnPacket(Build.MODEL));
+            final RoboServer.ListenerBinder binder = (RoboServer.ListenerBinder) iBinder;
+            binder.registerListener(LoginActivity.this, new TCPServer.ServerListener() {
+                @Override
+                public void connected() {
+                    binder.sendPacket(new ConnPacket(Build.MODEL));
+                }
+
+                @Override
+                public void disconnected() {
+
+                }
+            });
         }
 
         @Override
@@ -97,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements TCPServer.Packet
     @Override
     public void onPacketReceived(Packet p) {
         if(p instanceof ConnAckPacket) {
+            Log.d("ROBO", ((ConnAckPacket)p).getName());
             this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

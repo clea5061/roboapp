@@ -31,12 +31,13 @@ import java.util.ArrayList;
 import me.cleary.evan.roboapp.network.TCPServer;
 import me.cleary.evan.roboapp.packet.Packet;
 
-public class RoboServer extends Service implements TCPServer.PacketReceivedListener {
+public class RoboServer extends Service implements TCPServer.PacketReceivedListener, TCPServer.ServerListener {
 
     public static final String BUNDLE_ARGS_SERVER = "RA_SERVER";
     public static final String BUNDLE_ARGS_PORT = "RA_PORT";
 
     private ArrayList<TCPServer.PacketReceivedListener> mPacketListeners = new ArrayList<>();
+    private ArrayList<TCPServer.ServerListener> mServerListeners = new ArrayList<>();
     private IBinder mBinder = new ListenerBinder();
     private TCPServer mTCPServer;
     private short mPort;
@@ -51,15 +52,36 @@ public class RoboServer extends Service implements TCPServer.PacketReceivedListe
         }
     }
 
+    @Override
+    public void connected() {
+        for(TCPServer.ServerListener listener: mServerListeners) {
+            if(listener != null) {
+                listener.connected();
+            }
+        }
+    }
+
+    @Override
+    public void disconnected() {
+        for(TCPServer.ServerListener listener: mServerListeners) {
+            if(listener != null) {
+                listener.connected();
+            }
+        }
+    }
+
     public class ListenerBinder extends Binder {
-        public int registerListener(TCPServer.PacketReceivedListener listener) {
+        public int registerListener(TCPServer.PacketReceivedListener listener, TCPServer.ServerListener severListener) {
             mPacketListeners.add(listener);
+            mServerListeners.add(severListener);
             return mPacketListeners.size() - 1;
         }
 
         public void deregisterCallback(int listenerIndex) {
             mPacketListeners.remove(listenerIndex);
+            mServerListeners.remove(listenerIndex);
             mPacketListeners.add(listenerIndex, null);
+            mServerListeners.add(listenerIndex, null);
         }
 
         public void sendPacket(Packet p) {
@@ -75,7 +97,7 @@ public class RoboServer extends Service implements TCPServer.PacketReceivedListe
             mPort = serviceArgs.getShort(BUNDLE_ARGS_PORT, (short)0);
         }
         mTCPServer = new TCPServer();
-        mTCPServer.registerListener(this);
+        mTCPServer.registerListener(this, this);
         mTCPServer.init();
         new Thread() {
             @Override
