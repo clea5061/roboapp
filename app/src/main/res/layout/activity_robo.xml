@@ -6,45 +6,130 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".RoboActivity">
-    <TableRow android:layout_width="match_parent"
-        android:gravity="center_horizontal"
-        android:layout_weight="1">
-    </TableRow>
 
-    <TableRow android:layout_width="match_parent"
-        android:gravity="center_horizontal"
-        android:layout_height="wrap_content">
-    <GridLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/txt_velocity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:textSize="18sp"
+            android:text="Velocity" />
+
+        <TextView
+            android:id="@+id/txt_vel_linear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_velocity"
+            android:layout_marginStart="15dp"
+            android:text="Linear"/>
+
+        <TextView
+            android:id="@+id/txt_vel_ang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_vel_linear"
+            android:layout_marginStart="15dp"
+            android:text="Omega" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_colision"
+            android:textSize="18sp"
+            android:layout_below="@+id/txt_vel_ang"
+            android:text="Collision"/>
+    </RelativeLayout>
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:numColumns="3"
-        android:rowCount="3"
-        android:layout_gravity="center_horizontal"
-        >
-        <ImageView android:src="@drawable/ic_arrow_upward_black_24dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_column="1"
-            />
-        <ImageView android:src="@drawable/ic_arrow_forward_black_24dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_column="3"
-            android:layout_row="1"
-            />
-        <ImageView android:src="@drawable/ic_arrow_back_black_24dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_column="0"
-            android:layout_row="1"
-            />
-        <ImageView android:src="@drawable/ic_arrow_downward_black_24dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_column="1"
-            android:layout_row="2"
-            />
-    </GridLayout>
+        android:id="@+id/btn_emergency_stop"
+        android:text="Emergency Stop"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_autonmous"
+        android:text="Autonomous: Disabled"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speed:"/>
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:id="@+id/txt_speed_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 cm/s"/>
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/sb_speed_limit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="50"
+        android:progress="12" />
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_horizontal">
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:numColumns="3"
+            android:rowCount="3">
+
+            <ImageView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/btn_forward"
+                android:layout_width="@dimen/control_size"
+                android:layout_height="@dimen/control_size"
+                android:layout_column="1"
+                android:src="@drawable/ic_arrow_upward_black_24dp" />
+
+            <ImageView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/btn_right"
+                android:layout_width="@dimen/control_size"
+                android:layout_height="@dimen/control_size"
+                android:layout_column="3"
+                android:layout_row="1"
+                android:src="@drawable/ic_arrow_forward_black_24dp" />
+
+            <ImageView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/btn_left"
+                android:layout_width="@dimen/control_size"
+                android:layout_height="@dimen/control_size"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
+
+            <ImageView
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/btn_backward"
+                android:layout_width="@dimen/control_size"
+                android:layout_height="@dimen/control_size"
+                android:layout_column="1"
+                android:layout_row="2"
+                android:src="@drawable/ic_arrow_downward_black_24dp" />
+        </GridLayout>
     </TableRow>
 
 </LinearLayout>

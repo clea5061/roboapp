@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import javax.crypto.Mac;
+
 /**
  * Created by Evan on 6/4/2018.
  */
@@ -36,19 +38,30 @@ public class AckPacket extends AbstractPacket{
     }
 
     private int mAckId;
+    public AckPacket() {}
 
     public AckPacket(int ackId) {
-
+        mAckId = ackId;
     }
 
     @Override
     public void writePacket(OutputStream os) throws IOException {
         os.write(OPCODE);
+        super.writePacket(os);
         os.write(ByteBuffer.allocate(4).putInt(mAckId).array());
     }
 
     @Override
     public boolean readPacket(InputStream is) {
-        return true;
+        super.readPacket(is);
+        byte[] in = new byte[4];
+        try {
+            is.read(in);
+            mAckId = ByteBuffer.wrap(in).getInt();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Do not send ack
+        return false;
     }
 }

@@ -105,6 +105,12 @@ public class LoginActivity extends AppCompatActivity implements TCPServer.Packet
     };
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(mConnection);
+    }
+
+    @Override
     public void onPacketReceived(Packet p) {
         if(p instanceof ConnAckPacket) {
             Log.d("ROBO", ((ConnAckPacket)p).getName());

@@ -17,35 +17,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package me.cleary.evan.roboapp.packet;
+package me.cleary.evan.roboapp.models;
 
-import android.util.Log;
+public class RoboState {
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by Evan on 6/4/2018.
- */
-
-public class PacketFactory {
-
-    private static Map<String, Class<? extends Packet>> packetMap = new HashMap<>();
-
-    static {
-        packetMap.put(new String(ConnAckPacket.OPCODE),ConnAckPacket.class);
-        packetMap.put(new String(AckPacket.OPCODE),AckPacket.class);
-        packetMap.put(new String(StatePacket.OPCODE),StatePacket.class);
-    }
-
-    public static void registerPacket(byte[] opcode, Class<? extends Packet> packetClass) {
-        packetMap.put(new String(opcode), packetClass);
-    }
-
-    public static Packet getPacket(byte[] opcode) throws IllegalAccessException, InstantiationException {
-        Log.d("ROBO","Decoding "+new String(opcode));
-        Class<? extends Packet> c = packetMap.get(new String(opcode));
-        Log.d("ROBO", "Found Packet: "+c.getSimpleName());
-        return c.newInstance();
-    }
 }

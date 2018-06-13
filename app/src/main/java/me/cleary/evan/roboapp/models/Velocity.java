@@ -28,6 +28,8 @@ import me.cleary.evan.roboapp.packet.Packet;
  */
 
 public class Velocity implements PacketSerializable<Velocity> {
+    private final int PACKET_SIZE = 24;
+
     private double mY, mX, mOmega;
 
     public Velocity(){}
@@ -52,7 +54,7 @@ public class Velocity implements PacketSerializable<Velocity> {
 
     @Override
     public byte[] packetize() {
-        byte[] bytes = new byte[24];
+        byte[] bytes = new byte[PACKET_SIZE];
         ByteBuffer.wrap(bytes).putDouble(mY).putDouble(mX).putDouble(mOmega);
         return bytes;
     }
@@ -68,6 +70,6 @@ public class Velocity implements PacketSerializable<Velocity> {
 
     @Override
     public int size() {
-        return 24;
+        return PACKET_SIZE;
     }
 }

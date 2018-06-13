@@ -123,7 +123,7 @@ public class TCPServer implements Server {
                         Packet p = null;
                         try {
                             p = PacketFactory.getPacket(opCode);
-                        } catch (IllegalAccessException | InstantiationException e) {
+                        } catch (Exception e) {
                             mWr.addPacket(new UnkPacket());
                             continue;
                         }
@@ -140,6 +140,7 @@ public class TCPServer implements Server {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    TCPServer.this.shutdown();
                 }
             }
         }

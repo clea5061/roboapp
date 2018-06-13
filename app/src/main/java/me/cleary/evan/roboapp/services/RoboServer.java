@@ -65,9 +65,10 @@ public class RoboServer extends Service implements TCPServer.PacketReceivedListe
     public void disconnected() {
         for(TCPServer.ServerListener listener: mServerListeners) {
             if(listener != null) {
-                listener.connected();
+                listener.disconnected();
             }
         }
+        this.stopSelf();
     }
 
     public class ListenerBinder extends Binder {

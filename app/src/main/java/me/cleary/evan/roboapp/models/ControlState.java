@@ -27,7 +27,10 @@ import java.nio.ByteBuffer;
 
 public class ControlState implements PacketSerializable<ControlState> {
 
+    private final int PACKET_SIZE = 4;
+
     private char mControls = 0;
+    private char mSpeed = 0;
 
     public ControlState(){}
 
@@ -51,10 +54,16 @@ public class ControlState implements PacketSerializable<ControlState> {
         mControls |= 0x10;
     }
 
+    public void enableEmergency() { mControls |= 0x20; }
+
+    public void setSpeed(char speed) {
+        mSpeed = speed;
+    }
+
     @Override
     public byte[] packetize() {
-        byte[] bytes = new byte[2];
-        ByteBuffer.wrap(bytes).putChar(mControls);
+        byte[] bytes = new byte[PACKET_SIZE];
+        ByteBuffer.wrap(bytes).putChar(mControls).putChar(mSpeed);
         return bytes;
     }
 
@@ -66,6 +75,6 @@ public class ControlState implements PacketSerializable<ControlState> {
 
     @Override
     public int size() {
-        return 2;
+        return PACKET_SIZE;
     }
 }

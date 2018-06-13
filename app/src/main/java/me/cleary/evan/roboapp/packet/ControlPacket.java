@@ -45,4 +45,8 @@ public class ControlPacket extends AbstractPacket {
         super.writePacket(os);
         os.write(mControls.packetize());
     }
+
+    public ControlState getControls() {
+        return mControls;
+    }
 }
